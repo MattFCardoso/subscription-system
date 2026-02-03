@@ -1,0 +1,139 @@
+# =====================================================
+# SISTEMA DE ASSINATURAS - Configurações da Aplicação
+# =====================================================
+
+# ---------------------
+# Configurações Gerais
+# ---------------------
+spring:
+  application:
+    name: subscription-system
+
+  # ---------------------
+  # PostgreSQL / JPA
+  # ---------------------
+  datasource:
+    url: jdbc:postgresql://localhost:5432/subscriptions_db
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+    # Pool de conexões (HikariCP - padrão do Spring Boot)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000      # 20s para obter conexão
+      idle-timeout: 300000           # 5min sem uso -> fechar
+      max-lifetime: 600000           # 10min vida máxima
+
+  jpa:
+    hibernate:
+      ddl-auto: none                 # Quem gerencia é o Flyway
+    show-sql: true                   # Útil durante o desenvolvimento
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true             # SQL formatado no log
+
+  # ---------------------
+  # Flyway (Migrations)
+  # ---------------------
+  flyway:
+    enabled: false  # change this later to true when migrations are ready
+    locations: classpath:db/migration
+    validate-on-migrate: false # change this later to true when migrations are ready
+
+  # ---------------------
+  # Redis (Cache)
+  # ---------------------
+  redis:
+    host: localhost
+    port: 6379
+    lettuce:                         # Lettuce é o cliente padrão do Spring
+      pool:
+        max-active: 8
+        max-idle: 3
+        min-idle: 0
+
+  # ---------------------
+  # Cache (usa Redis)
+  # ---------------------
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000           # TTL padrão: 5 minutos (em ms)
+      key-prefix: "assinaturas:"     # Prefixo para evitar conflitos
+
+  # ---------------------
+  # RabbitMQ (Mensageria)
+  # ---------------------
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    # Configurações de conexão
+    connection-timeout: 10s
+    # Template para envio de mensagens
+    template:
+      exchange: renovacao.exchange
+      routing-key: renovacao.key
+    # Listener para consumir mensagens
+    listener:
+      simple:
+        concurrency: 3              # 3 consumidores em paralelo
+        max-concurrency: 10
+        prefetch: 1                  # Processar 1 mensagem por vez
+        acknowledge-mode: auto       # Auto-ack (pode trocar para manual)
+
+# ---------------------
+# Agendador (Scheduler)
+# ---------------------
+spring.task.scheduling:
+  thread-pool:
+    size: 3                          # Threads para os schedulers
+
+# ---------------------
+# Swagger / OpenAPI
+# ---------------------
+springdoc:
+  openapi:
+    info:
+      title: "API Sistema de Assinaturas"
+      description: "Sistema de gestão de assinaturas para streaming"
+      version: "1.0.0"
+  swagger-ui:
+    path: /swagger-ui.html           # URL do Swagger UI
+  api-docs:
+    path: /v3/api-docs               # URL da spec OpenAPI
+
+# ---------------------
+# Actuator (Monitoramento)
+# ---------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+
+# ---------------------
+# Logging
+# ---------------------
+logging:
+  level:
+    root: INFO
+    com.streaming: DEBUG             # Seu pacote com log mais detalhado
+    org.springframework.amqp: DEBUG  # Log do RabbitMQ
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# ---------------------
+# Servidor
+# ---------------------
+server:
+  port: 8080
+  servlet:
+    context-path: /api               # Todas as rotas começam com /api

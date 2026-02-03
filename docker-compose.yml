@@ -1,0 +1,110 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: subscriptions-db
+    restart: always
+    environment:
+      POSTGRES_DB: subscriptions_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - subscriptions-network
+    # Healthcheck: a app só sobe quando o banco estiver pronto
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d subscriptions_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: subscriptions-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - subscriptions-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: subscriptions-mq
+    ports:
+      - "5672:5672"       # Conexão da aplicação
+      - "15672:15672"     # Interface web de gerenciamento
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - subscriptions-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build: .
+    container_name: subscriptions-api
+    restart: always
+    # Só sobe quando postgres, redis e rabbitmq estiverem saudáveis
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      # PostgreSQL - aponta para o nome do serviço, não localhost
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/subscriptions_db
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+
+      # JPA
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_SHOW_SQL: "true"
+
+      # Flyway
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_LOCATIONS: classpath:db/migration
+
+      # Redis - aponta para o nome do serviço
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+
+      # Cache
+      SPRING_CACHE_TYPE: redis
+      SPRING_CACHE_REDIS_TIME_TO_LIVE: 300000
+
+      # RabbitMQ - aponta para o nome do serviço
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
+      # Servidor
+      SERVER_PORT: 8080
+      SERVER_SERVLET_CONTEXT_PATH: /api
+    networks:
+      - subscriptions-network
+
+volumes:
+  postgres_data:
+
+networks:
+  subscriptions-network:
+    driver: bridge
