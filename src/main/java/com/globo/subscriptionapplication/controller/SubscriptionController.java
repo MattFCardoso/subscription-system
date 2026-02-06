@@ -2,8 +2,6 @@ package com.globo.subscriptionapplication.controller;
 
 import com.globo.subscriptionapplication.dto.request.CreateSubscriptionRequest;
 import com.globo.subscriptionapplication.dto.response.SubscriptionResponse;
-import com.globo.subscriptionapplication.service.PaymentServiceImpl;
-import com.globo.subscriptionapplication.service.RenewalServiceImpl;
 import com.globo.subscriptionapplication.service.impl.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,8 +24,6 @@ import java.util.UUID;
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
-    private final PaymentServiceImpl paymentServiceImpl;
-    private final RenewalServiceImpl renewalServiceImpl;
 
 
     @PostMapping

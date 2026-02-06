@@ -81,7 +81,7 @@
         </dependency>
 
         <!-- ==================== -->
-        <!-- MENSAGERIA - RabbitMQ -->
+        <!-- RabbitMQ -->
         <!-- ==================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

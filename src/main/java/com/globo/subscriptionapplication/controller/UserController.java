@@ -33,6 +33,10 @@ public class UserController {
     @Operation(summary = "Get user by email")
     public ResponseEntity<UserResponse> getUserByEmail(@PathVariable String email) {
         UserResponse response = userService.getUserByEmail(email);
+
+        if (response == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(response);
     }
 }
