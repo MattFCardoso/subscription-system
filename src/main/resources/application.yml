@@ -24,27 +24,31 @@ spring:
       connection-timeout: 20000      # 20s para obter conexão
       idle-timeout: 300000           # 5min sem uso -> fechar
       max-lifetime: 600000           # 10min vida máxima
-
   jpa:
     hibernate:
-      ddl-auto: none                 # Quem gerencia é o Flyway
+      ddl-auto: update                 # Quem gerencia é o Flyway
     show-sql: true                   # Útil durante o desenvolvimento
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true             # SQL formatado no log
 
   # ---------------------
   # Flyway (Migrations)
   # ---------------------
   flyway:
-    enabled: false  # change this later to true when migrations are ready
+    enabled: true
     locations: classpath:db/migration
-    validate-on-migrate: false # change this later to true when migrations are ready
+    baseline-on-migrate: true
+    validate-on-migrate: true
 
   # ---------------------
   # Redis (Cache)
   # ---------------------
+  data:
+    redis:
+      repositories:
+        enabled: false               # Usamos Redis apenas para cache, não como repositório
   redis:
     host: localhost
     port: 6379
@@ -55,16 +59,16 @@ spring:
         min-idle: 0
 
   # ---------------------
-  # Cache (usa Redis)
+  # Cache
   # ---------------------
   cache:
     type: redis
     redis:
       time-to-live: 300000           # TTL padrão: 5 minutos (em ms)
-      key-prefix: "assinaturas:"     # Prefixo para evitar conflitos
+      key-prefix: "subscriptions:"     # Prefixo para evitar conflitos
 
   # ---------------------
-  # RabbitMQ (Mensageria)
+  # RabbitMQ
   # ---------------------
   rabbitmq:
     host: localhost
@@ -72,13 +76,10 @@ spring:
     username: guest
     password: guest
     virtual-host: /
-    # Configurações de conexão
     connection-timeout: 10s
-    # Template para envio de mensagens
     template:
-      exchange: renovacao.exchange
-      routing-key: renovacao.key
-    # Listener para consumir mensagens
+      exchange: renewal.exchange
+      routing-key: renewal.key
     listener:
       simple:
         concurrency: 3              # 3 consumidores em paralelo
@@ -87,7 +88,7 @@ spring:
         acknowledge-mode: auto       # Auto-ack (pode trocar para manual)
 
 # ---------------------
-# Agendador (Scheduler)
+# Scheduler
 # ---------------------
 spring.task.scheduling:
   thread-pool:
@@ -97,15 +98,10 @@ spring.task.scheduling:
 # Swagger / OpenAPI
 # ---------------------
 springdoc:
-  openapi:
-    info:
-      title: "API Sistema de Assinaturas"
-      description: "Sistema de gestão de assinaturas para streaming"
-      version: "1.0.0"
-  swagger-ui:
-    path: /swagger-ui.html           # URL do Swagger UI
   api-docs:
     path: /v3/api-docs               # URL da spec OpenAPI
+  swagger-ui:
+    path: /swagger-ui.html           # URL do Swagger UI
 
 # ---------------------
 # Actuator (Monitoramento)
@@ -117,6 +113,8 @@ management:
         include: health, info, metrics
   endpoint:
     health:
+      redis:
+        enabled: false
       show-details: always
 
 # ---------------------
@@ -125,7 +123,8 @@ management:
 logging:
   level:
     root: INFO
-    com.streaming: DEBUG             # Seu pacote com log mais detalhado
+    com.globo: DEBUG                 # Seu pacote com log mais detalhado
+    org.flywaydb: DEBUG              # Log do Flyway
     org.springframework.amqp: DEBUG  # Log do RabbitMQ
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -136,4 +135,4 @@ logging:
 server:
   port: 8080
   servlet:
-    context-path: /api               # Todas as rotas começam com /api
+    context-path: /api

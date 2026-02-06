@@ -1,10 +1,10 @@
-version: "3.8"
+#version: "3.8"
 
 services:
 
   postgres:
     image: postgres:16
-    container_name: subscriptions-db
+    container_name: subscriptions_db
     restart: always
     environment:
       POSTGRES_DB: subscriptions_db
@@ -73,6 +73,7 @@ services:
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_PROFILES_ACTIVE: docker
 
       # JPA
       SPRING_JPA_HIBERNATE_DDL_AUTO: none
