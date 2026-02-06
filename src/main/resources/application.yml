@@ -49,14 +49,14 @@ spring:
     redis:
       repositories:
         enabled: false               # Usamos Redis apenas para cache, não como repositório
-  redis:
-    host: localhost
-    port: 6379
-    lettuce:                         # Lettuce é o cliente padrão do Spring
-      pool:
-        max-active: 8
-        max-idle: 3
-        min-idle: 0
+#  redis:
+#    host: localhost
+#    port: 6379
+#    lettuce:                         # Lettuce é o cliente padrão do Spring
+#      pool:
+#        max-active: 8
+#        max-idle: 3
+#        min-idle: 0
 
   # ---------------------
   # Cache
@@ -106,6 +106,9 @@ springdoc:
 # ---------------------
 # Actuator (Monitoramento)
 # ---------------------
+# ---------------------
+# Actuator (Monitoramento)
+# ---------------------
 management:
   endpoints:
     web:
@@ -113,10 +116,10 @@ management:
         include: health, info, metrics
   endpoint:
     health:
-      redis:
-        enabled: false
       show-details: always
-
+  health:
+    redis:
+      enabled: false  # Desabilita o healthcheck do Redis
 # ---------------------
 # Logging
 # ---------------------
