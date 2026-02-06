@@ -2,9 +2,10 @@ package com.globo.subscriptionapplication.service;
 
 import com.globo.subscriptionapplication.domain.model.User;
 import com.globo.subscriptionapplication.domain.repository.UserRepository;
-import com.globo.subscriptionapplication.dto.request.CreateUserRequest;
-import com.globo.subscriptionapplication.dto.response.UserResponse;
+import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
+import com.globo.subscriptionapplication.domain.dto.response.UserResponse;
 import com.globo.subscriptionapplication.exception.UserServiceException;
+import com.globo.subscriptionapplication.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

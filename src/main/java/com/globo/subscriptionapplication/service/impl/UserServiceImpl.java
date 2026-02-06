@@ -1,21 +1,17 @@
-package com.globo.subscriptionapplication.service;
+package com.globo.subscriptionapplication.service.impl;
 
 import com.globo.subscriptionapplication.domain.model.User;
 import com.globo.subscriptionapplication.domain.repository.UserRepository;
-import com.globo.subscriptionapplication.dto.request.CreateUserRequest;
-import com.globo.subscriptionapplication.dto.response.UserResponse;
+import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
+import com.globo.subscriptionapplication.domain.dto.response.UserResponse;
 import com.globo.subscriptionapplication.exception.UserServiceException;
-import com.globo.subscriptionapplication.service.impl.UserService;
+import com.globo.subscriptionapplication.service.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

@@ -1,5 +1,6 @@
-package com.globo.subscriptionapplication.dto.request;
+package com.globo.subscriptionapplication.domain.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.br.CPF;
 
 @Data
 @Builder
@@ -19,7 +21,9 @@ public class CreateUserRequest {
     private String name;
 
     @NotBlank(message = "CPF is required")
-    @Size(min = 11, max = 11, message = "CPF must have 11 digits")
+    @Size(min = 11, max = 11, message = "CPF must be exactly 11 digits, ex: 12345678909")
+    @Schema(description = "CPF must be a valid Brazilian CPF number whithout formatting (only digits)", example = "12345678909")
+    @CPF
     private String cpf;
 
 

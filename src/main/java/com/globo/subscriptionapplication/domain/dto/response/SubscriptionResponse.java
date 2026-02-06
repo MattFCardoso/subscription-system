@@ -1,5 +1,6 @@
-package com.globo.subscriptionapplication.dto.response;
+package com.globo.subscriptionapplication.domain.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
 import com.globo.subscriptionapplication.domain.enums.SubscriptionStatusEnum;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,10 @@ public class SubscriptionResponse {
     private UUID subscriptionId;
     private UUID userId;
     private PlanEnum plan;
-    private LocalDate startDate;
-    private LocalDate expirationDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String expirationDate;
     private SubscriptionStatusEnum status;
     private Integer renewalAttempts;
 }

@@ -10,7 +10,7 @@ spring:
         enabled: false
 
   redis:
-    host: redis
+    host: subscriptions-cache
     port: 6379
 
   rabbitmq:

@@ -1,11 +1,11 @@
 CREATE TABLE subscriptions (
-    subscription_id UUID PRIMARY KEY DEFAULT RANDOM_UUID(),
+    subscription_id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
     user_id UUID NOT NULL,
     plan VARCHAR(20) NOT NULL,
     start_date DATE NOT NULL,
     expiration_date DATE NOT NULL,
     status VARCHAR(20) NOT NULL,
-    failed_attempts INTEGER NOT NULL DEFAULT 0,
+    renewal_attempts INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
 

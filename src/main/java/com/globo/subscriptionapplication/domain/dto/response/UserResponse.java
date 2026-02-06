@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.dto.response;
+package com.globo.subscriptionapplication.domain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

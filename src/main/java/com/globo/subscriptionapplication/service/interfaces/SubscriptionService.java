@@ -1,7 +1,7 @@
-package com.globo.subscriptionapplication.service.impl;
+package com.globo.subscriptionapplication.service.interfaces;
 
-import com.globo.subscriptionapplication.dto.request.CreateSubscriptionRequest;
-import com.globo.subscriptionapplication.dto.response.SubscriptionResponse;
+import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
+import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
 
 import java.time.LocalDate;
 import java.util.UUID;

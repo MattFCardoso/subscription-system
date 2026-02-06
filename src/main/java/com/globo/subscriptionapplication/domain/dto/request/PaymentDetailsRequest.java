@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.dto.request;
+package com.globo.subscriptionapplication.domain.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

@@ -1,5 +1,5 @@
 CREATE TABLE payments (
-    payment_id UUID PRIMARY KEY DEFAULT RANDOM_UUID(),
+    payment_id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
     subscription_id UUID NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     status VARCHAR(20) NOT NULL,

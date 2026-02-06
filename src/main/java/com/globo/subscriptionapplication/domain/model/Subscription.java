@@ -22,7 +22,6 @@ public class Subscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false)
     private UUID subscriptionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +42,6 @@ public class Subscription {
     @Column(nullable = false, length = 10)
     private SubscriptionStatusEnum status;
 
-    @Column(name = "renewal_attempts", nullable = false)
     @Builder.Default
     private int renewalAttempts = 0;
 

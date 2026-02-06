@@ -1,10 +1,10 @@
-package com.globo.subscriptionapplication.service;
+package com.globo.subscriptionapplication.service.impl;
 
 import com.globo.subscriptionapplication.domain.enums.PaymentStatusEnum;
 import com.globo.subscriptionapplication.domain.model.Payment;
 import com.globo.subscriptionapplication.domain.model.Subscription;
 import com.globo.subscriptionapplication.domain.repository.PaymentRepository;
-import com.globo.subscriptionapplication.service.impl.PaymentService;
+import com.globo.subscriptionapplication.service.interfaces.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
-package com.globo.subscriptionapplication.service;
+package com.globo.subscriptionapplication.service.impl;
 
 import com.globo.subscriptionapplication.domain.model.Payment;
 import com.globo.subscriptionapplication.domain.model.Subscription;
-import com.globo.subscriptionapplication.service.impl.RenewalService;
-import com.globo.subscriptionapplication.service.impl.SubscriptionService;
+import com.globo.subscriptionapplication.service.interfaces.RenewalService;
+import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;

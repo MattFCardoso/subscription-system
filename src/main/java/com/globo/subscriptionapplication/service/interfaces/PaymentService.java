@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.service.impl;
+package com.globo.subscriptionapplication.service.interfaces;
 
 import com.globo.subscriptionapplication.domain.model.Payment;
 import com.globo.subscriptionapplication.domain.model.Subscription;

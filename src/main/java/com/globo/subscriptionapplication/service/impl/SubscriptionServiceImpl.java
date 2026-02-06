@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.service;
+package com.globo.subscriptionapplication.service.impl;
 
 import com.globo.subscriptionapplication.domain.enums.PaymentMethodEnum;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
@@ -7,11 +7,11 @@ import com.globo.subscriptionapplication.domain.model.Subscription;
 import com.globo.subscriptionapplication.domain.model.User;
 import com.globo.subscriptionapplication.domain.repository.SubscriptionRepository;
 import com.globo.subscriptionapplication.domain.repository.UserRepository;
-import com.globo.subscriptionapplication.dto.request.CreateSubscriptionRequest;
-import com.globo.subscriptionapplication.dto.request.PaymentDetailsRequest;
-import com.globo.subscriptionapplication.dto.response.SubscriptionResponse;
+import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
+import com.globo.subscriptionapplication.domain.dto.request.PaymentDetailsRequest;
+import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
 import com.globo.subscriptionapplication.exception.SubscriptionException;
-import com.globo.subscriptionapplication.service.impl.SubscriptionService;
+import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -211,8 +211,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .subscriptionId(subscription.getSubscriptionId())
                 .userId(subscription.getUserId().getUserId())
                 .plan(subscription.getPlan())
-                .startDate(subscription.getStartDate())
-                .expirationDate(subscription.getExpirationDate())
+                .startDate(subscription.getStartDate().toString())
+                .expirationDate(subscription.getExpirationDate().toString())
                 .status(subscription.getStatus())
                 .renewalAttempts(subscription.getRenewalAttempts())
                 .build();

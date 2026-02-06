@@ -1,6 +1,6 @@
 //package com.globo.subscriptionapplication.messaging;
 //
-//import com.globo.subscriptionapplication.service.RenewalServiceImpl;
+//import com.globo.subscriptionapplication.service.impl.RenewalServiceImpl;
 //import lombok.RequiredArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.amqp.rabbit.annotation.RabbitListener;

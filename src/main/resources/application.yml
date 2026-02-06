@@ -5,6 +5,11 @@
 # ---------------------
 # Configurações Gerais
 # ---------------------
+
+server:
+  port: 8080
+  shutdown: graceful
+
 spring:
   application:
     name: subscription-system
@@ -17,30 +22,19 @@ spring:
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
-    # Pool de conexões (HikariCP - padrão do Spring Boot)
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
-      connection-timeout: 20000      # 20s para obter conexão
-      idle-timeout: 300000           # 5min sem uso -> fechar
-      max-lifetime: 600000           # 10min vida máxima
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 600000
   jpa:
     hibernate:
-      ddl-auto: update                 # Quem gerencia é o Flyway
-    show-sql: true                   # Útil durante o desenvolvimento
+      ddl-auto: none
+    show-sql: true
     properties:
       hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true             # SQL formatado no log
-
-  # ---------------------
-  # Flyway (Migrations)
-  # ---------------------
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-    validate-on-migrate: true
+        format_sql: true
 
   # ---------------------
   # Redis (Cache)
@@ -48,15 +42,7 @@ spring:
   data:
     redis:
       repositories:
-        enabled: false               # Usamos Redis apenas para cache, não como repositório
-#  redis:
-#    host: localhost
-#    port: 6379
-#    lettuce:                         # Lettuce é o cliente padrão do Spring
-#      pool:
-#        max-active: 8
-#        max-idle: 3
-#        min-idle: 0
+        enabled: false
 
   # ---------------------
   # Cache
@@ -64,8 +50,8 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 300000           # TTL padrão: 5 minutos (em ms)
-      key-prefix: "subscriptions:"     # Prefixo para evitar conflitos
+      time-to-live: 300000
+      key-prefix: "subscriptions:"
 
   # ---------------------
   # RabbitMQ
@@ -82,10 +68,10 @@ spring:
       routing-key: renewal.key
     listener:
       simple:
-        concurrency: 3              # 3 consumidores em paralelo
+        concurrency: 3
         max-concurrency: 10
-        prefetch: 1                  # Processar 1 mensagem por vez
-        acknowledge-mode: auto       # Auto-ack (pode trocar para manual)
+        prefetch: 1
+        acknowledge-mode: auto
 
 # ---------------------
 # Scheduler
@@ -94,18 +80,7 @@ spring.task.scheduling:
   thread-pool:
     size: 3                          # Threads para os schedulers
 
-# ---------------------
-# Swagger / OpenAPI
-# ---------------------
-springdoc:
-  api-docs:
-    path: /v3/api-docs               # URL da spec OpenAPI
-  swagger-ui:
-    path: /swagger-ui.html           # URL do Swagger UI
 
-# ---------------------
-# Actuator (Monitoramento)
-# ---------------------
 # ---------------------
 # Actuator (Monitoramento)
 # ---------------------
@@ -119,23 +94,15 @@ management:
       show-details: always
   health:
     redis:
-      enabled: false  # Desabilita o healthcheck do Redis
+      enabled: true  # Desabilita o healthcheck do Redis
 # ---------------------
 # Logging
 # ---------------------
 logging:
   level:
     root: INFO
-    com.globo: DEBUG                 # Seu pacote com log mais detalhado
+    com.globo: DEBUG
     org.flywaydb: DEBUG              # Log do Flyway
     org.springframework.amqp: DEBUG  # Log do RabbitMQ
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-
-# ---------------------
-# Servidor
-# ---------------------
-server:
-  port: 8080
-  servlet:
-    context-path: /api

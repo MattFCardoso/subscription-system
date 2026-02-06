@@ -1,8 +1,8 @@
 package com.globo.subscriptionapplication.controller;
 
-import com.globo.subscriptionapplication.dto.request.CreateSubscriptionRequest;
-import com.globo.subscriptionapplication.dto.response.SubscriptionResponse;
-import com.globo.subscriptionapplication.service.impl.SubscriptionService;
+import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
+import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
+import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,6 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-
     @PostMapping
     @Operation(summary = "Create a new subscription")
     @ApiResponses({
@@ -38,8 +38,7 @@ public class SubscriptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //todo fix this
-    @GetMapping("/{subscriptionId}")
+    @GetMapping(value = "/{subscriptionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get subscription by ID")
     public ResponseEntity<SubscriptionResponse> getSubscription(@PathVariable UUID subscriptionId) {
         log.info("Fetching subscription: {}", subscriptionId);

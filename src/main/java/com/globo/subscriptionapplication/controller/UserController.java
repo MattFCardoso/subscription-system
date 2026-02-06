@@ -1,8 +1,8 @@
 package com.globo.subscriptionapplication.controller;
 
-import com.globo.subscriptionapplication.dto.request.CreateUserRequest;
-import com.globo.subscriptionapplication.dto.response.UserResponse;
-import com.globo.subscriptionapplication.service.impl.UserService;
+import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
+import com.globo.subscriptionapplication.domain.dto.response.UserResponse;
+import com.globo.subscriptionapplication.service.interfaces.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

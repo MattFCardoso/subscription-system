@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.dto.request;
+package com.globo.subscriptionapplication.domain.dto.request;
 
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
 import jakarta.validation.constraints.NotNull;

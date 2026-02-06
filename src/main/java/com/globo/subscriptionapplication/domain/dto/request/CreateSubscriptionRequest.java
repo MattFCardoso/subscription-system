@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.dto.request;
+package com.globo.subscriptionapplication.domain.dto.request;
 
 import com.globo.subscriptionapplication.domain.enums.PaymentMethodEnum;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
