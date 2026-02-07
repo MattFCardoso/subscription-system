@@ -106,40 +106,21 @@ Isso iniciará:
 
 ### Usuários
 ```http
-POST   /subscriptions/users              # Criar usuário
-GET    /subscriptions/users/{id}         # Buscar usuário
-GET    /subscriptions/users              # Listar usuários
-PUT    /subscriptions/users/{id}         # Atualizar usuário
+POST   /api/users                        # Criar usuário
+GET    /api/users/{userId}               # Buscar usuário por ID
+
 ```
 
 ### Assinaturas
 ```http
-POST   /subscriptions                    # Criar assinatura
-GET    /subscriptions/{id}               # Buscar assinatura
-GET    /subscriptions/user/{userId}      # Assinaturas do usuário
-GET    /subscriptions/user/{userId}/active # Assinatura ativa
-PUT    /subscriptions/{id}/cancel        # Cancelar assinatura
-PUT    /subscriptions/{id}/suspend       # Suspender assinatura
-PUT    /subscriptions/{id}/plan          # Alterar plano
+POST   /api/subscriptions                      # Criar assinatura
+GET    /api/subscriptions/{subscriptionId}     # Buscar assinatura por ID
+GET    /api/subscriptions/user/{userId}/active # Buscar assinatura ativa do usuário
+PUT    /api/subscriptions/{subscriptionId}/cancel # Cancelar assinatura
+PUT    /api/subscriptions/{subscriptionId}/plan   # Atualizar plano
+
 ```
 
-### Pagamentos
-```http
-GET    /subscriptions/{id}/payments      # Histórico de pagamentos
-GET    /subscriptions/payments/failed    # Pagamentos falhados
-GET    /subscriptions/payments/range     # Pagamentos por período
-```
-
-### Renovação
-```http
-POST   /subscriptions/{id}/renew         # Renovação manual
-```
-
-### Utilitários
-```http
-GET    /subscriptions/plans              # Planos disponíveis
-GET    /subscriptions/health             # Health check
-```
 
 ## 🧪 Exemplos de Uso
 

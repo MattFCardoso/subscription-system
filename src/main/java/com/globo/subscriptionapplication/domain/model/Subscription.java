@@ -24,9 +24,9 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID subscriptionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -54,6 +54,7 @@ public class Subscription {
     private LocalDateTime updatedAt;
 
     public void incrementRenewalAttempts() {
+        this.status = SubscriptionStatusEnum.FALHA_PAGAMENTO;
         this.renewalAttempts++;
     }
 
@@ -69,8 +70,15 @@ public class Subscription {
         this.status = SubscriptionStatusEnum.CANCELADA;
     }
 
-    public void renewSubscription(LocalDate newExpirationDate) {
-        this.expirationDate = newExpirationDate;
+    public void renewSubscription() {
+        this.expirationDate = LocalDate.now().plusMonths(1);
+        this.renewalAttempts = 0;
+        this.status = SubscriptionStatusEnum.ATIVA;
+    }
+
+    public void startSubscription() {
+        this.startDate = LocalDate.now();
+        this.expirationDate = LocalDate.now().plusMonths(1);
         this.renewalAttempts = 0;
         this.status = SubscriptionStatusEnum.ATIVA;
     }

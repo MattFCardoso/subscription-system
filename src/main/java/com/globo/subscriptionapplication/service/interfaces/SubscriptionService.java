@@ -1,6 +1,7 @@
 package com.globo.subscriptionapplication.service.interfaces;
 
 import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
+import com.globo.subscriptionapplication.domain.dto.request.UpdatePlanRequest;
 import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
 
 import java.time.LocalDate;
@@ -13,4 +14,5 @@ public interface SubscriptionService {
     void renewSubscription(UUID subscriptionId, LocalDate newExpirationDate);
     SubscriptionResponse getSubscriptionById(UUID subscriptionId);
     SubscriptionResponse getActiveSubscriptionByUserId(UUID userId);
+    SubscriptionResponse updateSubscriptionPlan(UUID subscriptionId, UpdatePlanRequest request);
 }

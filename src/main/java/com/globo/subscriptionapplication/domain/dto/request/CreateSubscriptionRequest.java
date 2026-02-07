@@ -1,8 +1,6 @@
 package com.globo.subscriptionapplication.domain.dto.request;
 
-import com.globo.subscriptionapplication.domain.enums.PaymentMethodEnum;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,10 +22,4 @@ public class CreateSubscriptionRequest {
     @NotNull(message = "Plan cannot be null")
     private PlanEnum plan;
 
-    @NotNull(message = "Payment method cannot be blank")
-    private PaymentMethodEnum paymentMethod;
-
-    @Valid
-    @NotNull(message = "Payment details cannot be null")
-    private PaymentDetailsRequest paymentDetails;
 }

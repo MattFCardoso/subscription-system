@@ -26,7 +26,6 @@ public class CreateUserRequest {
     @CPF
     private String cpf;
 
-
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Email must be valid")
     @Size(max = 255, message = "Email cannot exceed 255 characters")

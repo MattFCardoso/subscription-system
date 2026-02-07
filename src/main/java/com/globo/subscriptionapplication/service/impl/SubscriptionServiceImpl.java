@@ -1,15 +1,15 @@
 package com.globo.subscriptionapplication.service.impl;
 
-import com.globo.subscriptionapplication.domain.enums.PaymentMethodEnum;
+import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
+import com.globo.subscriptionapplication.domain.dto.request.UpdatePlanRequest;
+import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
 import com.globo.subscriptionapplication.domain.enums.SubscriptionStatusEnum;
 import com.globo.subscriptionapplication.domain.model.Subscription;
 import com.globo.subscriptionapplication.domain.model.User;
 import com.globo.subscriptionapplication.domain.repository.SubscriptionRepository;
 import com.globo.subscriptionapplication.domain.repository.UserRepository;
-import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
-import com.globo.subscriptionapplication.domain.dto.request.PaymentDetailsRequest;
-import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
+import com.globo.subscriptionapplication.events.MessageProducer;
 import com.globo.subscriptionapplication.exception.SubscriptionException;
 import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -32,6 +30,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final MessageProducer messageProducer;
 
     @Transactional
     public SubscriptionResponse createSubscription(CreateSubscriptionRequest request) {
@@ -41,30 +40,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + request.getEmail()));
 
         // verify active subscription
-        if (subscriptionRepository.existsByUserIdAndStatus(user, SubscriptionStatusEnum.ATIVA)) {
+        if (subscriptionRepository.existsByUserAndStatus(user, SubscriptionStatusEnum.ATIVA)) {
             throw new RuntimeException("User already has an active subscription");
         }
 
-
-        // Processar pagamento primeiro
-        boolean paymentSuccessful = processPayment(request.getPaymentDetails(),
-                request.getPlan(),
-                user,
-                request.getPaymentMethod());
-
-        if (!paymentSuccessful) {
-            throw new SubscriptionException("Payment failed. Please check your payment details.");
-        }
-
-        LocalDate startDate = LocalDate.now();
-        LocalDate expirationDate = startDate.plusMonths(1);
-
         Subscription subscription = Subscription.builder()
-                .userId(user)
+                .user(user)
                 .plan(request.getPlan())
-                .startDate(startDate)
-                .expirationDate(expirationDate)
-                .status(SubscriptionStatusEnum.ATIVA)
+                .status(SubscriptionStatusEnum.PAGAMENTO_PENDENTE)
                 .renewalAttempts(0)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -72,19 +55,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription = subscriptionRepository.save(subscription);
         log.info("Subscription created successfully: {}", subscription.getSubscriptionId());
 
+        messageProducer.processSubscriptionPayment(subscription);
         return mapToResponse(subscription);
-    }
-
-    private boolean processPayment(PaymentDetailsRequest paymentDetails,
-                                   PlanEnum plan,
-                                   User user,
-                                   PaymentMethodEnum paymentMethod) {
-        // Aqui você integraria com um gateway de pagamento
-        // Ex: Stripe, PagSeguro, Mercado Pago
-        log.info("Processing payment for user: {} with method: {}", user.getEmail(), paymentMethod);
-
-        // Simulação (em produção, chamaria API externa)
-        return true; // ou false se falhar
     }
 
     @Transactional(readOnly = true)
@@ -125,21 +97,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         log.info("Subscription cancelled successfully. User can use until: {}", subscription.getExpirationDate());
     }
 
-    @Transactional
-    public Subscription suspendSubscription(UUID subscriptionId) {
-        log.info("Suspending subscription: {}", subscriptionId);
-
-        Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found: " + subscriptionId));
-
-        subscription.suspendSubscription();
-        subscription.setUpdatedAt(LocalDateTime.now());
-
-        subscription = subscriptionRepository.save(subscription);
-        log.info("Subscription suspended successfully: {}", subscriptionId);
-
-        return subscription;
-    }
 
     @Transactional
     public void renewSubscription(UUID subscriptionId, LocalDate newExpirationDate) {
@@ -148,7 +105,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         Subscription subscription = subscriptionRepository.findByIdWithLock(subscriptionId)
                 .orElseThrow(() -> new RuntimeException("Subscription not found: " + subscriptionId));
 
-        subscription.renewSubscription(newExpirationDate);
+        subscription.renewSubscription();
         subscription.setUpdatedAt(LocalDateTime.now());
 
         subscription = subscriptionRepository.save(subscription);
@@ -157,14 +114,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Transactional
-    public Subscription updatePlan(UUID subscriptionId, PlanEnum newPlan) {
-        log.info("Updating plan for subscription: {} to: {}", subscriptionId, newPlan);
+    @CacheEvict(value = {"subscriptions", "activeSubscriptions"}, key = "#subscriptionId")
+    public SubscriptionResponse updateSubscriptionPlan(UUID subscriptionId, UpdatePlanRequest request) {
+        log.info("Updating plan for subscription: {} to: {}", subscriptionId, request.getNewPlan());
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found: " + subscriptionId));
+                .orElseThrow(() -> new SubscriptionException("Subscription not found: " + subscriptionId));
 
         if (subscription.getStatus() != SubscriptionStatusEnum.ATIVA) {
-            throw new RuntimeException("Only active subscriptions can have their plan changed");
+            throw new SubscriptionException("Only active subscriptions can have their plan changed");
+        }
+
+        PlanEnum newPlan = request.getNewPlan();
+
+        if (subscription.getPlan() == newPlan) {
+            throw new SubscriptionException("New plan must be different from current plan");
         }
 
         subscription.setPlan(newPlan);
@@ -173,46 +137,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         subscription = subscriptionRepository.save(subscription);
         log.info("Plan updated successfully for subscription: {}", subscriptionId);
 
-        return subscription;
+        return mapToResponse(subscription);
     }
 
-    @Transactional(readOnly = true)
-    public List<SubscriptionResponse> findExpiredSubscriptions(LocalDate date) {
-        log.debug("Finding expired subscriptions for date: {}", date);
-
-        Subscription subscription = subscriptionRepository.findExpiredSubscriptions(date, SubscriptionStatusEnum.ATIVA)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No expired subscriptions found for date: " + date));
-        return Collections.singletonList(mapToResponse(subscription));
-    }
-
-    @Transactional
-    public void incrementRenewalAttempts(UUID subscriptionId) {
-        log.info("Incrementing renewal attempts for subscription: {}", subscriptionId);
-
-        Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found: " + subscriptionId));
-
-        subscription.incrementRenewalAttempts();
-        subscription.setUpdatedAt(LocalDateTime.now());
-
-        // Se excedeu as tentativas, suspende a assinatura
-        if (subscription.attemptsExceeded()) {
-            subscription.suspendSubscription();
-            log.warn("Subscription suspended due to exceeded renewal attempts: {}", subscriptionId);
-        }
-
-        subscriptionRepository.save(subscription);
-    }
 
     private SubscriptionResponse mapToResponse(Subscription subscription) {
         return SubscriptionResponse.builder()
                 .subscriptionId(subscription.getSubscriptionId())
-                .userId(subscription.getUserId().getUserId())
+                .userId(subscription.getUser().getUserId())
                 .plan(subscription.getPlan())
-                .startDate(subscription.getStartDate().toString())
-                .expirationDate(subscription.getExpirationDate().toString())
+                .startDate(subscription.getStartDate() != null ? subscription.getStartDate().toString() : null)
+                .expirationDate(subscription.getExpirationDate() != null ? subscription.getExpirationDate().toString() : null)
                 .status(subscription.getStatus())
                 .renewalAttempts(subscription.getRenewalAttempts())
                 .build();

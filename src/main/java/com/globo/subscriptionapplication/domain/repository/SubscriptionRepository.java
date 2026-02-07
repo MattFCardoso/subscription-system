@@ -18,12 +18,11 @@ import java.util.UUID;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
-    @Query("SELECT s FROM Subscription s WHERE s.userId.userId = :userId AND s.status = :status")
-    Optional<Subscription> findByUserIdAndStatus(
+    @Query("SELECT s FROM Subscription s WHERE s.user.userId = :userId AND s.status = :status")    Optional<Subscription> findByUserIdAndStatus(
             @Param("userId") UUID userId,
             @Param("status") SubscriptionStatusEnum status);
 
-    boolean existsByUserIdAndStatus(User userId, SubscriptionStatusEnum status);
+    boolean existsByUserAndStatus(User user, SubscriptionStatusEnum status);
 
     @Query("SELECT s FROM Subscription s WHERE s.expirationDate <= :date AND s.status = :status")
     List<Subscription> findExpiredSubscriptions(
@@ -34,4 +33,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT s FROM Subscription s WHERE s.subscriptionId = :subscriptionId")
     Optional<Subscription> findByIdWithLock(@Param("subscriptionId") UUID subscriptionId);
+
+    @Query("SELECT s FROM Subscription s WHERE s.expirationDate <= CURRENT_DATE AND s.status = 'ATIVA' AND s.renewalAttempts < 3")
+    List<Subscription> findAllExpired();
 }

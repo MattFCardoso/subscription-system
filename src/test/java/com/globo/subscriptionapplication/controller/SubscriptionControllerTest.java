@@ -1,14 +1,16 @@
 package com.globo.subscriptionapplication.controller;
 
-import com.globo.subscriptionapplication.domain.enums.PlanEnum;
 import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
 import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
+import com.globo.subscriptionapplication.domain.enums.PlanEnum;
 import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -17,6 +19,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @Nested
 @DisplayName("Create Subscription")
 class CreateSubscriptionTests {
