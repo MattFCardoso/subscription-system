@@ -2,7 +2,7 @@ package com.globo.subscriptionapplication.controller;
 
     import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
     import com.globo.subscriptionapplication.domain.dto.response.UserResponse;
-    import com.globo.subscriptionapplication.service.interfaces.UserService;
+    import com.globo.subscriptionapplication.service.UserService;
     import org.junit.jupiter.api.BeforeEach;
     import org.junit.jupiter.api.DisplayName;
     import org.junit.jupiter.api.Nested;

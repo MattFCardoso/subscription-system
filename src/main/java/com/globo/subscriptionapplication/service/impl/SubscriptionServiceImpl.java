@@ -11,7 +11,7 @@ import com.globo.subscriptionapplication.domain.repository.SubscriptionRepositor
 import com.globo.subscriptionapplication.domain.repository.UserRepository;
 import com.globo.subscriptionapplication.events.MessageProducer;
 import com.globo.subscriptionapplication.exception.SubscriptionException;
-import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
+import com.globo.subscriptionapplication.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -39,7 +39,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found: " + request.getEmail()));
 
-        // verify active subscription
         if (subscriptionRepository.existsByUserAndStatus(user, SubscriptionStatusEnum.ATIVA)) {
             throw new RuntimeException("User already has an active subscription");
         }
@@ -139,7 +138,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         return mapToResponse(subscription);
     }
-
 
     private SubscriptionResponse mapToResponse(Subscription subscription) {
         return SubscriptionResponse.builder()

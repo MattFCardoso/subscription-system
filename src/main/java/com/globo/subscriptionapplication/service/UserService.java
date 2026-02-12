@@ -1,4 +1,4 @@
-package com.globo.subscriptionapplication.service.interfaces;
+package com.globo.subscriptionapplication.service;
 
 import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
 import com.globo.subscriptionapplication.domain.dto.response.UserResponse;

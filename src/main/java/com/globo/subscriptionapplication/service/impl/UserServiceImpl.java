@@ -5,7 +5,7 @@ import com.globo.subscriptionapplication.domain.repository.UserRepository;
 import com.globo.subscriptionapplication.domain.dto.request.CreateUserRequest;
 import com.globo.subscriptionapplication.domain.dto.response.UserResponse;
 import com.globo.subscriptionapplication.exception.UserServiceException;
-import com.globo.subscriptionapplication.service.interfaces.UserService;
+import com.globo.subscriptionapplication.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

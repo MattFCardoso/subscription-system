@@ -3,7 +3,7 @@ package com.globo.subscriptionapplication.controller;
 import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
 import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
 import com.globo.subscriptionapplication.domain.enums.PlanEnum;
-import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
+import com.globo.subscriptionapplication.service.SubscriptionService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

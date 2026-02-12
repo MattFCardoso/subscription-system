@@ -33,7 +33,8 @@ public class MessageProducer {
     }
 
     public void sendFailedPaymentNotification(User user) {
-        template.convertAndSend(RabbitMQConfig.NOTIFICATION_FAILED_KEY, "Caro usuario " + user.getName() + ", seu pagamento falhou. Por favor, tente novamente.");
+        template.convertAndSend(RabbitMQConfig.NOTIFICATION_FAILED_KEY, "Dear user " + user.getName() + ", the payment " +
+                "has failed. Please, try again.");
     }
 
 }

@@ -3,7 +3,7 @@ package com.globo.subscriptionapplication.controller;
 import com.globo.subscriptionapplication.domain.dto.request.CreateSubscriptionRequest;
 import com.globo.subscriptionapplication.domain.dto.request.UpdatePlanRequest;
 import com.globo.subscriptionapplication.domain.dto.response.SubscriptionResponse;
-import com.globo.subscriptionapplication.service.interfaces.SubscriptionService;
+import com.globo.subscriptionapplication.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -43,7 +43,6 @@ public class SubscriptionController {
     @Operation(summary = "Get subscription by ID")
     public ResponseEntity<SubscriptionResponse> getSubscription(@PathVariable UUID subscriptionId) {
         log.info("Fetching subscription: {}", subscriptionId);
-
         SubscriptionResponse response = subscriptionService.getSubscriptionById(subscriptionId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -52,9 +51,7 @@ public class SubscriptionController {
     @Operation(summary = "Get all subscriptions for a user")
     public ResponseEntity<SubscriptionResponse> getSubscriptionsByUser(@PathVariable UUID userId) {
         log.info("Fetching all subscriptions for user: {}", userId);
-
         SubscriptionResponse response = subscriptionService.getActiveSubscriptionByUserId(userId);
-
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -78,6 +75,4 @@ public class SubscriptionController {
         SubscriptionResponse response = subscriptionService.updateSubscriptionPlan(subscriptionId, request);
         return ResponseEntity.ok(response);
     }
-
-
 }
